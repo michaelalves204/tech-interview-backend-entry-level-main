@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:1
+
+ARG RUBY_VERSION=3.3.1
+FROM ruby:$RUBY_VERSION-slim
+
+# Dependências do sistema
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    libpq-dev \
+    libvips \
+    pkg-config \
+    curl \
+    postgresql-client \
+    redis-tools && \
+    rm -rf /var/lib/apt/lists/*
+
+# Diretório da app
+WORKDIR /rails
+
+# Variáveis de ambiente para DEV
+ENV RAILS_ENV=development \
+    BUNDLE_PATH=/bundle \
+    BUNDLE_BIN=/bundle/bin \
+    GEM_HOME=/bundle \
+    PATH="/bundle/bin:$PATH"
+
+# Cria diretório de gems com permissão aberta
+RUN mkdir -p /bundle && chmod -R 777 /bundle
+
+# Instala gems primeiro (cache de build)
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Copia o resto da aplicação
+COPY . .
+
+# Expõe porta do Rails
+EXPOSE 3000
+
+# Comando padrão
+CMD ["bash", "-c", "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0"]

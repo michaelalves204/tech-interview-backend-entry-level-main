@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: myapp_postgres_dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: myapp_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.0.15-alpine
+    container_name: myapp_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev:/data
+    restart: unless-stopped
+
+  web:
+    container_name: myapp_api_dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0 -p 3000"
+    volumes:
+      - .:/rails
+      - bundle_dev:/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:password@db:5432/myapp_development
+      REDIS_URL: redis://redis:6379/0
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+
+volumes:
+  postgres_dev:
+  redis_dev:
+  bundle_dev:
