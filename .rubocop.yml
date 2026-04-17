@@ -1,0 +1,20 @@
+AllCops:
+  Exclude:
+    - bin/**/*
+    - vendor/**/*
+    - node_modules/**/*
+    - db/schema.rb
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+    - db/schema.rb
+    - Guardfile
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - bin/**/*

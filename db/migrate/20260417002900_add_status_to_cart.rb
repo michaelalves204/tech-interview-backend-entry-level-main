@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddStatusToCart < ActiveRecord::Migration[7.1]
   def change
     add_column :carts, :status, :integer, default: 0, null: false
