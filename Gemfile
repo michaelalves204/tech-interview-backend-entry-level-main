@@ -6,7 +6,7 @@ ruby '3.3.1'
 gem 'bootsnap', require: false
 gem 'pg', '~> 1.1'
 gem 'puma', '>= 5.0'
-gem 'rails', '~> 7.1.3', '>= 7.1.3.2'
+gem 'rails', '~> 7.2.3.1'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 
 gem 'redis', '~> 5.2'
@@ -24,5 +24,7 @@ group :development, :test do
 end
 
 group :development do
+  gem 'brakeman', '~> 6.0'
   gem 'rubocop-rails-omakase', '~> 1.1'
+  gem 'bundle-audit', '~> 0.2.0'
 end
