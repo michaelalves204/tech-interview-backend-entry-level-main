@@ -14,7 +14,10 @@ class DeleteAbandonedCartJob
   private
 
   def delete_abandoned_carts
-    Cart.abandoned_status.abandoned_candidates(DELETE_AFTER_SECONDS.seconds.ago)
-        .find_each(batch_size: 500, &:destroy)
+    delete_after_seconds = DELETE_AFTER_SECONDS.seconds.ago
+
+    Cart.abandoned_status
+        .abandoned_candidates(delete_after_seconds)
+        .in_batches(of: 1000, &:destroy_all)
   end
 end

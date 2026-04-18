@@ -14,10 +14,15 @@ class AbandonCartJob
   private
 
   def mark_as_abandoned
-    Cart.active_status.abandoned_candidates(ABANDON_AFTER_SECONDS.seconds.ago)
-        .update_all(
-          status: Cart.statuses[:abandoned],
-          updated_at: Time.current
-        )
+    abandon_after_seconds = ABANDON_AFTER_SECONDS.seconds.ago
+
+    Cart.active_status
+        .where('last_interaction_at < ?', abandon_after_seconds)
+        .in_batches(of: 1000) do |batch|
+          batch.update_all(
+            status: Cart.statuses[:abandoned],
+            updated_at: Time.current
+          )
+        end
   end
 end
