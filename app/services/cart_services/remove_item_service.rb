@@ -15,9 +15,9 @@ module CartServices
       return failure('Product not in cart') unless cart_item
 
       remove_item!
-      update_cart_total!
+      cart.refresh_after_interaction!
 
-      success
+      { success: true }
     end
 
     private
@@ -30,15 +30,6 @@ module CartServices
 
     def remove_item!
       cart_item.destroy!
-    end
-
-    def update_cart_total!
-      total = cart.cart_items.sum('quantity * unit_price')
-      cart.update!(total_price: total)
-    end
-
-    def success
-      { success: true }
     end
 
     def failure(error)

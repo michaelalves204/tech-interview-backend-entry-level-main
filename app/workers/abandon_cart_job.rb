@@ -14,8 +14,7 @@ class AbandonCartJob
   private
 
   def mark_as_abandoned
-    Cart.active_status
-        .where('last_interaction_at < ?', ABANDON_AFTER_SECONDS.seconds.ago)
+    Cart.active_status.abandoned_candidates(ABANDON_AFTER_SECONDS.seconds.ago)
         .update_all(
           status: Cart.statuses[:abandoned],
           updated_at: Time.current

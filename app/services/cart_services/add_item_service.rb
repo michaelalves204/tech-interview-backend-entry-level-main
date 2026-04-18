@@ -16,9 +16,9 @@ module CartServices
       return failure(contract.errors.to_h) if contract.failure?
 
       update_cart_item!
-      update_cart_total!
+      cart.refresh_after_interaction!
 
-      success
+      { success: true }
     end
 
     private
@@ -47,15 +47,6 @@ module CartServices
       return quantity if cart_item.new_record?
 
       cart_item.quantity + quantity
-    end
-
-    def update_cart_total!
-      total = cart.cart_items.sum('quantity * unit_price')
-      cart.update!(total_price: total)
-    end
-
-    def success
-      { success: true }
     end
 
     def failure(errors)

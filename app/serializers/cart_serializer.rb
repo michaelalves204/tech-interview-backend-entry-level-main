@@ -2,7 +2,7 @@
 
 class CartSerializer
   def initialize(cart)
-    @cart = cart
+    @cart = CartServices::CacheService.fetch_cart(cart.id)
   end
 
   def as_json(*)
@@ -16,7 +16,7 @@ class CartSerializer
   private
 
   def cart_items
-    @cart_items ||= @cart.cart_items.includes(:product)
+    @cart.cart_items
   end
 
   def products

@@ -14,8 +14,7 @@ class DeleteAbandonedCartJob
   private
 
   def delete_abandoned_carts
-    Cart.abandoned_status
-        .where('last_interaction_at < ?', DELETE_AFTER_SECONDS.seconds.ago)
+    Cart.abandoned_status.abandoned_candidates(DELETE_AFTER_SECONDS.seconds.ago)
         .find_each(batch_size: 500, &:destroy)
   end
 end
