@@ -6,7 +6,7 @@
   :schedule:
     abandon_carts_job:
       cron: "*/10 * * * *"
-      class: "AbandonCartsJob"
+      class: "AbandonCartJob"
       queue: default
 
     delete_abandoned_cart_job:

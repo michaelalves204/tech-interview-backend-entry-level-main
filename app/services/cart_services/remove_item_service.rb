@@ -12,20 +12,37 @@ module CartServices
     end
 
     def call
-      cart_item = @cart.cart_items.find_by(product_id: @product_id)
+      return failure('Product not in cart') unless cart_item
 
-      return { success: false, error: 'Product not in cart' } unless cart_item
-
-      cart_item.destroy
-
+      remove_item!
       update_cart_total!
 
-      { success: true }
+      success
+    end
+
+    private
+
+    attr_reader :cart, :product_id
+
+    def cart_item
+      @cart_item ||= cart.cart_items.find_by(product_id: product_id)
+    end
+
+    def remove_item!
+      cart_item.destroy!
     end
 
     def update_cart_total!
-      total = @cart.cart_items.sum('quantity * unit_price')
-      @cart.update!(total_price: total)
+      total = cart.cart_items.sum('quantity * unit_price')
+      cart.update!(total_price: total)
+    end
+
+    def success
+      { success: true }
+    end
+
+    def failure(error)
+      { success: false, error: error }
     end
   end
 end

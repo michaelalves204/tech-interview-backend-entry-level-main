@@ -10,8 +10,8 @@ gem 'rails', '~> 7.2.3.1'
 gem 'tzinfo-data', platforms: %i[windows jruby]
 
 gem 'redis', '~> 5.2'
-gem 'sidekiq', '~> 7.2', '>= 7.2.4'
-gem 'sidekiq-scheduler', '~> 5.0', '>= 5.0.3'
+gem 'sidekiq', '~> 8.1', '>= 8.1.3'
+gem 'sidekiq-scheduler', '~> 6.0', '>= 6.0.2'
 
 gem 'dry-validation', '~> 1.11', '>= 1.11.1'
 gem 'guard'

@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-class AbandonCartJob < ApplicationJob
-  queue_as :default
+class AbandonCartJob
+  include Sidekiq::Worker
+
+  sidekiq_options queue: :default
 
   ABANDON_AFTER_SECONDS = ENV.fetch('CART_ABANDON_AFTER_SECONDS', 3.hours.to_i).to_i
 
