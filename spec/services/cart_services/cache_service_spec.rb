@@ -22,7 +22,6 @@ RSpec.describe CartServices::CacheService do
 
     context 'when cache is already populated' do
       it 'does not hit database again' do
-        # prime cache
         described_class.fetch_cart(cart.id)
 
         expect(Cart).not_to receive(:find)
