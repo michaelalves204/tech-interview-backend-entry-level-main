@@ -25,6 +25,10 @@ end
 
 group :development do
   gem 'brakeman', '~> 6.0'
-  gem 'rubocop-rails-omakase', '~> 1.1'
   gem 'bundle-audit', '~> 0.2.0'
+  gem 'rubocop-rails-omakase', '~> 1.1'
+end
+
+group :test do
+  gem 'simplecov', '~> 0.22.0'
 end
