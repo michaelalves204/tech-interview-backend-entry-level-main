@@ -19,13 +19,30 @@ module CartServices
 
       quantity = contract[:quantity]
 
-      cart_item = CartItem.find_or_initialize_by(cart: @cart, product: @product)
+      cart_item = CartItem.find_or_initialize_by(
+        cart: @cart,
+        product: @product
+      )
 
-      cart_item.quantity = cart_item.quantity.to_i + quantity
+      if cart_item.new_record?
+        cart_item.quantity = quantity
+      else
+        cart_item.quantity += quantity
+      end
+
       cart_item.unit_price ||= @product.price
       cart_item.save!
 
+      update_cart_total!
+
       { success: true }
+    end
+
+    private
+
+    def update_cart_total!
+      total = @cart.cart_items.sum('quantity * unit_price')
+      @cart.update!(total_price: total)
     end
   end
 end

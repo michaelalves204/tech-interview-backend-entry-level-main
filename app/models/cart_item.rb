@@ -14,14 +14,7 @@ class CartItem < ApplicationRecord
 
   before_validation :set_unit_price
 
-  after_save :update_cart_total
-  after_destroy :update_cart_total
-
   private
-
-  def update_cart_total
-    cart.recalculate_total!
-  end
 
   def set_unit_price
     return unless product

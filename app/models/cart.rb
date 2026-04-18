@@ -8,9 +8,4 @@ class Cart < ApplicationRecord
 
   has_many :cart_items, dependent: :destroy
   validates_numericality_of :total_price, greater_than_or_equal_to: 0
-
-  def recalculate_total!
-    total = cart_items.sum { |item| item.quantity * item.unit_price }
-    update!(total_price: total)
-  end
 end

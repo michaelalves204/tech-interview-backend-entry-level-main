@@ -18,7 +18,14 @@ module CartServices
 
       cart_item.destroy
 
+      update_cart_total!
+
       { success: true }
+    end
+
+    def update_cart_total!
+      total = @cart.cart_items.sum('quantity * unit_price')
+      @cart.update!(total_price: total)
     end
   end
 end
