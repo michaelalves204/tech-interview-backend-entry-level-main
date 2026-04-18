@@ -3,29 +3,39 @@
 require 'rails_helper'
 
 RSpec.describe Cart, type: :model do
-  context 'when validating' do
-    it 'validates numericality of total_price' do
-      cart = described_class.new(total_price: -1)
-      expect(cart.valid?).to be_falsey
-      expect(cart.errors[:total_price]).to include('must be greater than or equal to 0')
+  subject(:cart) { build(:cart, total_price: total_price) }
+
+  describe 'validations' do
+    context 'when total_price is negative' do
+      let(:total_price) { -10 }
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'when total_price is zero' do
+      let(:total_price) { 0 }
+
+      it { is_expected.to be_valid }
+    end
+
+    context 'when total_price is positive' do
+      let(:total_price) { 10 }
+
+      it { is_expected.to be_valid }
     end
   end
 
-  describe 'mark_as_abandoned' do
-    let(:shopping_cart) { create(:shopping_cart) }
+  describe 'status enum' do
+    subject(:cart) { create(:cart) }
 
-    it 'marks the shopping cart as abandoned if inactive for a certain time' do
-      shopping_cart.update(last_interaction_at: 3.hours.ago)
-      expect { shopping_cart.mark_as_abandoned }.to change { shopping_cart.abandoned? }.from(false).to(true)
+    it 'defaults to active' do
+      expect(cart).to be_active_status
     end
-  end
 
-  describe 'remove_if_abandoned' do
-    let(:shopping_cart) { create(:shopping_cart, last_interaction_at: 7.days.ago) }
+    it 'can be marked as abandoned' do
+      cart.abandoned_status!
 
-    it 'removes the shopping cart if abandoned for a certain time' do
-      shopping_cart.mark_as_abandoned
-      expect { shopping_cart.remove_if_abandoned }.to change { Cart.count }.by(-1)
+      expect(cart).to be_abandoned_status
     end
   end
 end

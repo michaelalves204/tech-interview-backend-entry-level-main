@@ -3,21 +3,100 @@
 require 'rails_helper'
 
 RSpec.describe '/carts', type: :request do
-  pending "TODO: Escreva os testes de comportamento do controller de carrinho necessários para cobrir a sua implmentação #{__FILE__}"
-  describe 'POST /add_items' do
-    let(:cart) { Cart.create }
-    let(:product) { Product.create(name: 'Test Product', price: 10.0) }
-    let!(:cart_item) { CartItem.create(cart: cart, product: product, quantity: 1) }
+  let(:product) { create(:product) }
 
-    context 'when the product already is in the cart' do
-      subject do
-        post '/cart/add_items', params: { product_id: product.id, quantity: 1 }, as: :json
-        post '/cart/add_items', params: { product_id: product.id, quantity: 1 }, as: :json
-      end
+  describe 'POST /cart' do
+    it 'creates cart item and returns cart payload' do
+      post '/cart', params: { product_id: product.id, quantity: 2 }
 
-      it 'updates the quantity of the existing item in the cart' do
-        expect { subject }.to change { cart_item.reload.quantity }.by(2)
-      end
+      expect(response).to have_http_status(:created)
+
+      json = JSON.parse(response.body)
+
+      expect(json).to include(
+        'products' => [
+          include(
+            'id' => product.id,
+            'quantity' => 2
+          )
+        ]
+      )
+    end
+  end
+
+  describe 'POST /cart/add_item' do
+    before do
+      post '/cart', params: { product_id: product.id, quantity: 1 }
+    end
+
+    it 'returns updated cart payload' do
+      post '/cart/add_item', params: { product_id: product.id, quantity: 1 }
+
+      expect(response).to have_http_status(:ok)
+
+      json = JSON.parse(response.body)
+
+      expect(json).to include(
+        'products' => [
+          include(
+            'id' => product.id,
+            'quantity' => 2
+          )
+        ]
+      )
+    end
+  end
+
+  describe 'GET /cart' do
+    before do
+      post '/cart', params: { product_id: product.id, quantity: 1 }
+    end
+
+    it 'returns cart payload' do
+      get '/cart'
+
+      expect(response).to have_http_status(:ok)
+
+      json = JSON.parse(response.body)
+
+      expect(json).to include(
+        'products' => [
+          include(
+            'id' => product.id,
+            'quantity' => 1
+          )
+        ]
+      )
+    end
+  end
+
+  describe 'DELETE /cart/:product_id' do
+    before do
+      post '/cart', params: { product_id: product.id, quantity: 1 }
+    end
+
+    it 'returns empty cart payload after removal' do
+      delete "/cart/#{product.id}"
+
+      expect(response).to have_http_status(:ok)
+
+      json = JSON.parse(response.body)
+
+      expect(json).to include(
+        'products' => []
+      )
+    end
+
+    it 'returns not found when product does not exist' do
+      delete '/cart/999999'
+
+      expect(response).to have_http_status(:not_found)
+
+      json = JSON.parse(response.body)
+
+      expect(json).to include(
+        'error' => be_present
+      )
     end
   end
 end
