@@ -32,3 +32,5 @@ end
 group :test do
   gem 'simplecov', '~> 0.22.0'
 end
+
+gem 'rack-cors', '~> 3.0'
